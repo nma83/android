@@ -710,6 +710,7 @@ public class ServiceBroker implements MqttCallback, ProxyableService, OutgoingMe
 
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
+		Log.v(TAG, "Got message topic " + topic);
         // Received messages are forwarded to ServiceApplication
         ServiceProxy.getServiceParser().parseIncomingBrokerMessage(topic, message);
 	}
