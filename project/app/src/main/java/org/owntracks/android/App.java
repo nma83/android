@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.greenrobot.eventbus.EventBus;
@@ -22,6 +23,8 @@ import org.owntracks.android.support.Events;
 import org.owntracks.android.support.GeocodingProvider;
 import org.owntracks.android.support.Parser;
 import org.owntracks.android.support.Preferences;
+import org.owntracks.android.support.MessageWaypointCollection;
+import org.owntracks.android.widget.LClocWidgetProvider;
 
 import android.app.Activity;
 import android.app.Application;
@@ -32,6 +35,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.databinding.ObservableMap;
+import android.content.ComponentName;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,6 +45,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
+import android.appwidget.AppWidgetManager;
 
 import timber.log.Timber;
 
@@ -51,6 +57,8 @@ public class App extends Application  {
     private static Handler mainHandler;
     private static Handler backgroundHandler;
 
+    private static HashMap<String, MessageWaypointCollection> contactWaypoints;
+    private static ContactsViewModel contactsViewModel;
     private static Activity currentActivity;
     private static boolean inForeground;
     private static int runningActivities = 0;
@@ -62,6 +70,14 @@ public class App extends Application  {
     private static AppComponent sAppComponent = null;
 
 
+    public static ObservableMap<String, FusedContact> getFusedContacts() {
+        return sAppComponent.contactsRepo().getAll();
+    }
+
+    public static MessageWaypointCollection getContactWaypoints(FusedContact c) {
+        return contactWaypoints.get(c.getTopic());
+    }
+    
     @Override
 	public void onCreate() {
 		super.onCreate();
@@ -90,6 +106,8 @@ public class App extends Application  {
 
         backgroundHandler = new Handler(mServiceHandlerThread.getLooper());
         mainHandler = new Handler(getMainLooper());
+        contactsViewModel =  new ContactsViewModel(); // TODO FIXME
+        contactWaypoints = new HashMap<>();
 
         checkFirstStart();
 
@@ -134,8 +152,74 @@ public class App extends Application  {
         return sAppComponent.contactsRepo().getById(topic);
     }
 
+    // ======= TODO FIXME
+    public static ContactsViewModel getContactsViewModel() {
+        return contactsViewModel;
+    }
 
+    public static void addFusedContact(final FusedContact c) {
+        //fusedContacts.put(c.getId(), c);
+        sAppComponent.contactsRepo().put(c.getId(), c);
 
+        postOnMainHandler(new Runnable() {
+            @Override
+            public void run() {
+                contactsViewModel.items.add(c);
+                
+                if (Preferences.getEnableWidget())
+                    ServiceProxy.getServiceApplication().requestWaypoints(c);
+            }
+        });
+        App.getEventBus().post(c);
+    }
+
+    public static void updateFusedContact(FusedContact c) {
+        App.getEventBus().post(c);
+        
+        if (contactWaypoints.containsKey(c.getTopic()))
+            updateWidget(getContext());
+        else
+            // Request waypoints if not available yet
+            postOnMainHandler(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (Preferences.getEnableWidget())
+                            ServiceProxy.getServiceApplication().requestWaypoints(c);
+                    }
+                });
+    }
+
+    public static void clearFusedContacts() {
+        sAppComponent.contactsRepo().clearAll();
+        postOnMainHandler(new Runnable() {
+            @Override
+            public void run() {
+                contactsViewModel.items.clear();
+            }
+        });
+    }
+    // END TODO FIXME
+    
+    public static void updateContactWaypoints(FusedContact c, MessageWaypointCollection wayps) {
+        contactWaypoints.put(c.getTopic(), wayps);
+        updateWidget(getContext());
+    }
+
+    // Update the widgets data provider
+    private static void updateWidget(Context context) {
+        if (Preferences.getEnableWidget()) {
+            AppWidgetManager appWidget = AppWidgetManager.getInstance(context);
+            int [] widgetIds = appWidget.getAppWidgetIds(new ComponentName(context, LClocWidgetProvider.class));
+            //Log.d(TAG, "Updating widget");
+            appWidget.notifyAppWidgetViewDataChanged(widgetIds, R.id.stack_widget_view);
+        }
+    }
+    
+    // Accessor from other classes
+    public static void notifyWidgetUpdate() {
+        updateWidget(getContext());
+    }
+    
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(Events.ModeChanged e) {
         getContactsRepo().clearAll();

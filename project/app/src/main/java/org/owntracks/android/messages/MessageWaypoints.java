@@ -13,6 +13,7 @@ public class MessageWaypoints extends MessageBase{
     static final String TYPE = "waypoints";
 
     private MessageWaypointCollection waypoints;
+    private static final String BASETOPIC_SUFFIX = "/waypoint";
 
     public MessageWaypointCollection getWaypoints() {
         return waypoints;
@@ -33,6 +34,6 @@ public class MessageWaypoints extends MessageBase{
     }
 
     @Override
-    public String getBaseTopicSuffix() {  return null; }
+    public String getBaseTopicSuffix() {  return BASETOPIC_SUFFIX; }
 
 }

@@ -110,7 +110,6 @@ public class GeocodingProvider {
     private static abstract class MessageLocationResolverTask extends AsyncTask<Double, Void, String>  {
         protected Double run;
 
-
         final WeakReference<MessageLocation> message;
         MessageLocationResolverTask(MessageLocation m) {
             this.message = new WeakReference<>(m);
