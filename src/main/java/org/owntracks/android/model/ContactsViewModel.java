@@ -11,8 +11,7 @@ import me.tatarka.bindingcollectionadapter.ItemView;
 
 
 public class ContactsViewModel{
-
     public final ObservableList<FusedContact> items = new ObservableArrayList<>();
     public final ItemView itemView = ItemView.of(BR.item, R.layout.row_contact);
-
+    public final ItemView clockView = ItemView.of(BR.item, R.layout.clock_contact);
 }

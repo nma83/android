@@ -55,6 +55,11 @@
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
             android:value=".activities.ActivityMap" />
+        <activity
+            android:name=".activities.ActivityClock"
+            android:parentActivityName=".activities.ActivityMap"
+            android:launchMode="singleTop"
+            android:label="@string/title_activity_clock"/>
 
         <activity
             android:name=".activities.ActivityRegions"

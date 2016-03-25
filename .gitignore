@@ -36,3 +36,5 @@ src/main/res/values-v1/keys.xml
 apk/
 android.iml
 android-release.apk
+
+*~

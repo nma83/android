@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <data>
+        <import type="android.view.View"/>
+        <variable name="item" type="org.owntracks.android.model.FusedContact"/>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:id="@+id/contactRow"
+        android:minWidth="60dp"
+        android:minHeight="72dp">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            app:imageProviderLevel="@{item.imageProviderLevel}"
+            app:contact="@{item}" />
+
+    </RelativeLayout>
+</layout>

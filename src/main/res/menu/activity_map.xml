@@ -17,5 +17,10 @@
         app:showAsAction="ifRoom"
         android:title="@string/publish"/>
 
-
+    <item
+        android:id="@+id/menu_showclock"
+        android:icon="@drawable/ic_clock"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom"
+        android:title="@string/publish"/>
 </menu>

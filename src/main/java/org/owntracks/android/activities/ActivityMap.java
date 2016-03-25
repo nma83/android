@@ -209,10 +209,14 @@ public class ActivityMap extends ActivityBase implements OnMapReadyCallback, Goo
         } else if (itemId == android.R.id.home) {
             finish();
             return true;
+        } else if (itemId == R.id.menu_showclock) {
+            Intent gotoClock = new Intent(this, ActivityClock.class);
+            Log.v(TAG, "calling clock");
+            startActivity(gotoClock);
+            return true;
         }
 
         return false;
-
     }
 
 

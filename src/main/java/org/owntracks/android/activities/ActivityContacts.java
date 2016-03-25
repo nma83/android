@@ -101,11 +101,14 @@ public class ActivityContacts extends ActivityBase implements RecyclerViewAdapte
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_report:
-                runActionWithLocationPermissionCheck(PERMISSION_REQUEST_REPORT_LOCATION);
-                return true;
-
-            default:
+        case R.id.menu_report:
+            runActionWithLocationPermissionCheck(PERMISSION_REQUEST_REPORT_LOCATION);
+            return true;
+        case R.id.menu_showclock:
+            Intent gotoClock = new Intent(this, ActivityClock.class);
+            startActivity(gotoClock);
+            return true;
+        default:
                 return super.onOptionsItemSelected(item);
         }
     }
