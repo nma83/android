@@ -1,7 +1,9 @@
-OwnTracks for Android
+OwnTracks for Android (patched)
 =======
 
-This is the OwnTracks Android app. 
+This is the OwnTracks Android app, patched to implement a [Weasley clock](http://harrypotter.wikia.com/wiki/Weasley_Clock).
+See the [blog post](http://narenma.net/2015/03/25/weasly-clock-owntracks/).
+
 For setup instructions and documentation see general Owntracks [wiki](https://github.com/owntracks/owntracks/wiki/Android).
 
 The application can be installed from [Google Play](https://play.google.com/store/apps/details?id=org.owntracks.android). 
