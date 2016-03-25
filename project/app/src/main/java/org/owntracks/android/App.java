@@ -45,6 +45,8 @@ import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
+import android.support.v4.util.ArrayMap;
+import android.support.v4.util.TimeUtils;
 import android.appwidget.AppWidgetManager;
 
 import timber.log.Timber;
@@ -210,7 +212,6 @@ public class App extends Application  {
         if (Preferences.getEnableWidget()) {
             AppWidgetManager appWidget = AppWidgetManager.getInstance(context);
             int [] widgetIds = appWidget.getAppWidgetIds(new ComponentName(context, LClocWidgetProvider.class));
-            //Log.d(TAG, "Updating widget");
             appWidget.notifyAppWidgetViewDataChanged(widgetIds, R.id.stack_widget_view);
         }
     }
