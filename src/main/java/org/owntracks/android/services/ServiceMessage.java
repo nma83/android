@@ -22,6 +22,8 @@ import org.owntracks.android.App;
 import org.owntracks.android.db.Dao;
 import org.owntracks.android.db.Waypoint;
 import org.owntracks.android.db.WaypointDao;
+import org.owntracks.android.db.WaypointIn;
+import org.owntracks.android.db.WaypointInDao;
 import org.owntracks.android.messages.MessageBase;
 import org.owntracks.android.messages.MessageCard;
 import org.owntracks.android.messages.MessageCmd;
@@ -163,6 +165,13 @@ public class ServiceMessage implements ProxyableService, MessageSender, MessageR
     }
 
     @Override
+    public void processMessage(MessageWaypointIn message) {
+        Log.v(TAG, "processMessage MessageWaypointIn (" + message.getTopic() + ")");
+        WaypointIn w = message.toDaoObject();
+        App.upsertWaypoint(w);
+    }
+    
+    @Override
     public void processMessage(MessageCmd message) {
         Log.v(TAG, "processMessage MessageCmd (" + message.getTopic() + ")");
         if(!Preferences.getRemoteCommand()) {
@@ -191,6 +200,11 @@ public class ServiceMessage implements ProxyableService, MessageSender, MessageR
     public void processMessage(MessageTransition message) {
         Log.v(TAG, "processMessage MessageTransition (" + message.getTopic() + ")");
         ServiceProxy.getServiceNotification().processMessage(message);
+
+        // Create waypoint out of transition
+        WaypointIn w = new WaypointIn(message.getTopic(), message.getWtst(),
+                                      message.getLat(), message.getLon());
+        App.upsertWaypoint(w);
     }
 
     public void processMessage(MessageConfiguration message) {

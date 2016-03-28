@@ -129,6 +129,23 @@ public class App extends Application  {
         });
     }
 
+    public static void upsertWaypoint(WaypointIn w) {
+        WaypointInDao dao = Dao.getWaypointInDao();
+        List<WaypointIn> deviceWaypoints =  dao.loadAll();
+
+        for(WaypointIn e : deviceWaypoints) {
+            // remove exisiting waypoint before importing new one
+            if (TimeUnit.MILLISECONDS.toSeconds(e.getDate().getTime()) == TimeUnit.MILLISECONDS.toSeconds(w.getDate().getTime()) &&
+               e.getTopic().equals(w.getTopic())) {
+                Log.v(TAG, "removing existing waypoint with same tst before adding it for topic " + e.getTopic());
+                dao.delete(e);
+            }
+        }
+
+        dao.insert(w);
+        //EventBus.getDefault().post(new Events.WaypointReceived(w));
+    }
+
     @SuppressWarnings("unused")
     public void onEventMainThread(Events.StateChanged.ServiceBroker e) {
 

@@ -11,6 +11,7 @@ public  class Dao {
     private static final String TAG = "Dao";
     private static SQLiteDatabase db;
     private static WaypointDao waypointDao;
+    private static WaypointInDao waypointInDao;
 
     public static void initialize(Context c) {
 
@@ -31,13 +32,14 @@ public  class Dao {
         DaoSession daoSession = daoMaster.newSession();
 
         waypointDao = daoSession.getWaypointDao();
+        waypointInDao = daoSession.getWaypointInDao();
     }
 
 
     public static SQLiteDatabase getDb() { return db; }
+
     public static WaypointDao getWaypointDao() {  return waypointDao; }
-
-
+    public static WaypointInDao getWaypointInDao() {  return waypointInDao; }
 
 
 }
