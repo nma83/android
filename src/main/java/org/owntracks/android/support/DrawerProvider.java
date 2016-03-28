@@ -19,6 +19,7 @@ import org.owntracks.android.activities.ActivityBase;
 import org.owntracks.android.activities.ActivityContacts;
 import org.owntracks.android.activities.ActivityFeatured;
 import org.owntracks.android.activities.ActivityMap;
+import org.owntracks.android.activities.ActivityClock;
 import org.owntracks.android.activities.ActivityPreferences;
 import org.owntracks.android.activities.ActivityStatus;
 import org.owntracks.android.activities.ActivityRegions;
@@ -70,6 +71,11 @@ public class DrawerProvider {
 
     }
 
+    private static SecondaryDrawerItem labelDrawerItem(ActivityBase activeActivity, @StringRes int labelText) {
+        return new SecondaryDrawerItem()
+            .withName(activeActivity.getString(labelText))
+            .withSelectable(false);
+    }
 
 
      public static Drawer buildDrawer(final ActivityBase activity, Toolbar toolbar, final OnDrawerItemClickListener activityClickListener) {
@@ -83,12 +89,13 @@ public class DrawerProvider {
                  .withStickyFooterDivider(true)
                 .addDrawerItems(
                         drawerItemForClass(activity, ActivityMap.class, R.string.title_activity_map, R.drawable.ic_layers_black_24dp),
-                        drawerItemForClass(activity, ActivityContacts.class, R.string.title_activity_contacts, R.drawable.ic_supervisor_account_black_24dp),
+                        drawerItemForClass(activity, ActivityClock.class, R.string.title_activity_contacts, R.drawable.ic_supervisor_account_black_24dp),
                       //  TODO: drawerItemForClass(activity, ActivityFeatured.class, R.string.title_activity_featured, R.drawable.ic_info_black_24dp)
                         drawerItemForClass(activity, ActivityRegions.class, R.string.title_activity_regions, R.drawable.ic_adjust_black_24dp)
 
 
                 ).addStickyDrawerItems(
+                                       labelDrawerItem(activity, R.string.made_with_label),
                         secondaryDrawerItemForClass(activity, ActivityStatus.class, R.string.title_activity_status, R.drawable.ic_info_black_24dp),
                         secondaryDrawerItemForClass(activity, ActivityPreferences.class, R.string.title_activity_preferences, R.drawable.ic_settings_black_36dp)
                 ).withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
