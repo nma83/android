@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.owntracks.android.App;
 import org.owntracks.android.db.Waypoint;
+import org.owntracks.android.db.WaypointIn;
 import org.owntracks.android.support.IncomingMessageProcessor;
 import org.owntracks.android.support.OutgoingMessageProcessor;
 import org.owntracks.android.support.Preferences;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MessageWaypoint extends MessageBase{
-    public static final String BASETOPIC_SUFFIX = "/event";
+    public static final String BASETOPIC_SUFFIX = "/waypoint";
 
     public String getBaseTopicSuffix() {  return BASETOPIC_SUFFIX; }
 
@@ -108,6 +109,17 @@ public class MessageWaypoint extends MessageBase{
         w.setBeaconMinor(getMinor());
         w.setShared(isShared());
         w.setDate(new Date(TimeUnit.SECONDS.toMillis(getTst())));
+
+        return w;
+    }
+
+    public WaypointIn toWaypointIn() {
+        WaypointIn w = new WaypointIn();
+
+        w.setTopic(getTopic());
+        w.setDescription(getDesc());
+        w.setGeofenceLatitude(getLat());
+        w.setGeofenceLongitude(getLon());
 
         return w;
     }

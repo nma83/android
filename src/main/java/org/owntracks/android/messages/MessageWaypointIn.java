@@ -28,6 +28,7 @@ public class MessageWaypointIn extends MessageBase {
     private double lon;
     private double lat;
     private long tst;
+    private Integer rad;
 
     public String getDesc() {
         return desc;
@@ -87,8 +88,6 @@ public class MessageWaypointIn extends MessageBase {
         w.setDescription(getDesc());
         w.setGeofenceLatitude(getLat());
         w.setGeofenceLongitude(getLon());
-        w.setGeofenceRadius(getRad());
-        w.setDate(new Date(TimeUnit.SECONDS.toMillis(getTst())));
 
         return w;
     }
@@ -98,8 +97,7 @@ public class MessageWaypointIn extends MessageBase {
         message.setDesc(w.getDescription());
         message.setLat(w.getGeofenceLatitude());
         message.setLon(w.getGeofenceLongitude());
-        message.setRad(w.getGeofenceRadius());
-        message.setTst(TimeUnit.MILLISECONDS.toSeconds(w.getDate().getTime()));
+        //message.setTst(TimeUnit.MILLISECONDS.toSeconds(w.getDate().getTime()));
         return message;
     }
 }

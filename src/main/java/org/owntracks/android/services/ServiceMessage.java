@@ -21,8 +21,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.owntracks.android.App;
 import org.owntracks.android.db.Dao;
 import org.owntracks.android.db.Waypoint;
-import org.owntracks.android.db.WaypointDao;
 import org.owntracks.android.db.WaypointIn;
+import org.owntracks.android.db.WaypointDao;
 import org.owntracks.android.db.WaypointInDao;
 import org.owntracks.android.messages.MessageBase;
 import org.owntracks.android.messages.MessageCard;
@@ -30,6 +30,7 @@ import org.owntracks.android.messages.MessageCmd;
 import org.owntracks.android.messages.MessageConfiguration;
 import org.owntracks.android.messages.MessageLocation;
 import org.owntracks.android.messages.MessageTransition;
+import org.owntracks.android.messages.MessageWaypoint;
 import org.owntracks.android.messages.MessageUnknown;
 import org.owntracks.android.model.FusedContact;
 import org.owntracks.android.support.Events;
@@ -165,9 +166,9 @@ public class ServiceMessage implements ProxyableService, MessageSender, MessageR
     }
 
     @Override
-    public void processMessage(MessageWaypointIn message) {
-        Log.v(TAG, "processMessage MessageWaypointIn (" + message.getTopic() + ")");
-        WaypointIn w = message.toDaoObject();
+    public void processMessage(MessageWaypoint message) {
+        Log.v(TAG, "processMessage MessageWaypoint (" + message.getTopic() + ")");
+        WaypointIn w = message.toWaypointIn();
         App.upsertWaypoint(w);
     }
     
@@ -202,7 +203,10 @@ public class ServiceMessage implements ProxyableService, MessageSender, MessageR
         ServiceProxy.getServiceNotification().processMessage(message);
 
         // Create waypoint out of transition
-        WaypointIn w = new WaypointIn(message.getTopic(), message.getWtst(),
+        String desc = message.getDesc();
+        if (desc == null)
+            desc = "PRIVATE";
+        WaypointIn w = new WaypointIn(0L, message.getTopic(), desc,
                                       message.getLat(), message.getLon());
         App.upsertWaypoint(w);
     }

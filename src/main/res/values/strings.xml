@@ -280,6 +280,7 @@
     <string name="preferencesExportFailed">Preferences export failed</string>
     <string name="preferencesExportSuccess">Export successfull</string>
     <string name="made_with_label">Built with ♥ on Owntracks</string>
+    <string name="empty_label">•</string>
 
     <string-array name="filepicker">
         <item>Select</item>

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.owntracks.android.db.Message;
 import org.owntracks.android.db.Waypoint;
+import org.owntracks.android.db.WaypointIn;
 import org.owntracks.android.model.FusedContact;
 import org.owntracks.android.model.GeocodableLocation;
 
@@ -75,6 +76,18 @@ public class Events {
 
     }
 
+    public static class WaypointInUpdated extends E {
+        final WaypointIn w;
+
+        public WaypointInUpdated(WaypointIn w) {
+            super();
+            this.w = w;
+        }
+
+        public WaypointIn getWaypointIn() {
+            return this.w;
+        }
+    }
 
     public static class WaypointUpdated extends E {
         final Waypoint w;

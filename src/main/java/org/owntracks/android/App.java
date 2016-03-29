@@ -2,11 +2,14 @@ package org.owntracks.android;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.owntracks.android.activities.ActivityMap;
 import org.owntracks.android.db.Dao;
 import org.owntracks.android.model.ContactsViewModel;
 import org.owntracks.android.model.FusedContact;
+import org.owntracks.android.db.WaypointIn;
+import org.owntracks.android.db.WaypointInDao;
 import org.owntracks.android.services.ServiceBroker;
 import org.owntracks.android.services.ServiceProxy;
 import org.owntracks.android.support.ContactImageProvider;
@@ -15,6 +18,7 @@ import org.owntracks.android.support.Events;
 import org.owntracks.android.support.GeocodingProvider;
 import org.owntracks.android.support.Preferences;
 import org.owntracks.android.support.StatisticsProvider;
+import org.owntracks.android.support.WaypointCollection;
 import org.owntracks.android.support.receiver.Parser;
 
 import android.app.Activity;
@@ -43,6 +47,7 @@ public class App extends Application  {
 
     private static Handler mainHanler;
     private static ArrayMap<String, FusedContact> fusedContacts;
+    private static ArrayMap<String, WaypointCollection> contactWaypoints;
     private static ContactsViewModel contactsViewModel;
     private static Activity currentActivity;
     private static boolean inForeground;
@@ -57,6 +62,10 @@ public class App extends Application  {
         return fusedContacts;
     }
 
+    public static ArrayMap<String, WaypointCollection> getContactWaypoints() {
+        return contactWaypoints;
+    }
+    
     @Override
 	public void onCreate() {
 		super.onCreate();
@@ -79,6 +88,9 @@ public class App extends Application  {
         // Background detection
         registerActivityLifecycleCallbacks(new LifecycleCallbacks());
         registerScreenOnReceiver();
+
+        // Load existing waypoints
+        loadContactWaypoints();
     }
 
 
@@ -93,11 +105,14 @@ public class App extends Application  {
     public static FusedContact getFusedContact(String topic) {
         return fusedContacts.get(topic);
     }
+    
+    public static WaypointCollection getWaypointCollection(String topic) {
+        return contactWaypoints.get(topic);
+    }
 
     public static ContactsViewModel getContactsViewModel() {
         return contactsViewModel;
     }
-
 
     public static void addFusedContact(final FusedContact c) {
         Log.v(TAG, "addFusedContact: " + c.getTopic());
@@ -129,21 +144,51 @@ public class App extends Application  {
         });
     }
 
+    public static void loadContactWaypoints() {
+        WaypointInDao dao = Dao.getWaypointInDao();
+        List<WaypointIn> deviceWaypoints =  dao.loadAll();
+        contactWaypoints = new ArrayMap<String, WaypointCollection>();
+
+        for(WaypointIn e : deviceWaypoints) {
+            String currTopic = e.getTopic();
+            WaypointCollection currWayps;
+
+            if (contactWaypoints.containsKey(currTopic))
+                currWayps = contactWaypoints.get(currTopic);
+            else
+                currWayps = new WaypointCollection();
+
+            currWayps.put(e.getDescription(), e);
+            contactWaypoints.put(currTopic, currWayps);
+            Log.v(TAG, "init load other waypoints: topic=" + e.getTopic() + ", desc=" + e.getDescription());
+        }
+    }
+    
     public static void upsertWaypoint(WaypointIn w) {
         WaypointInDao dao = Dao.getWaypointInDao();
         List<WaypointIn> deviceWaypoints =  dao.loadAll();
 
+        // TODO save to DB only when app is killed
         for(WaypointIn e : deviceWaypoints) {
             // remove exisiting waypoint before importing new one
-            if (TimeUnit.MILLISECONDS.toSeconds(e.getDate().getTime()) == TimeUnit.MILLISECONDS.toSeconds(w.getDate().getTime()) &&
-               e.getTopic().equals(w.getTopic())) {
+            if (e.getDescription().equals(w.getDescription()) &&
+                e.getTopic().equals(w.getTopic())) {
                 Log.v(TAG, "removing existing waypoint with same tst before adding it for topic " + e.getTopic());
                 dao.delete(e);
             }
         }
 
         dao.insert(w);
-        //EventBus.getDefault().post(new Events.WaypointReceived(w));
+
+        WaypointCollection currWayps;
+        if (contactWaypoints.containsKey(w.getTopic()))
+            currWayps = contactWaypoints.get(w.getTopic());
+        else
+            currWayps = new WaypointCollection();
+        currWayps.put(w.getDescription(), w);
+        contactWaypoints.put(w.getTopic(), currWayps);
+        
+        EventBus.getDefault().post(new Events.WaypointInUpdated(w));
     }
 
     @SuppressWarnings("unused")

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.RecyclerView;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Gravity;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.TextView;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Animatable;
 import android.animation.ObjectAnimator;
@@ -28,6 +30,7 @@ import org.owntracks.android.App;
 import org.owntracks.android.R;
 import org.owntracks.android.BR;
 import org.owntracks.android.db.Waypoint;
+import org.owntracks.android.db.WaypointIn;
 import org.owntracks.android.databinding.ActivityClockBinding;
 import org.owntracks.android.model.FusedContact;
 import org.owntracks.android.model.GeocodableLocation;
@@ -37,6 +40,7 @@ import org.owntracks.android.support.ContactImageProvider;
 import org.owntracks.android.support.DrawerProvider;
 import org.owntracks.android.support.Events;
 import org.owntracks.android.support.Toasts;
+import org.owntracks.android.support.WaypointCollection;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,6 +58,8 @@ public class ActivityClock extends ActivityBase
     private ActivityClockBinding binding;
     private Bundle intentExtras;
     private float currAngle;
+    private String activeContact;
+    public static final int CLOCK_FACE_MAX_LABELS = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +84,10 @@ public class ActivityClock extends ActivityBase
                     rotateClockHand((ImageView)v);
                 }
             });
+
+        // Load waypoint text
+        if (activeContact != null)
+            refreshClockFace(getDefaultContact());
     }
 
     @Override
@@ -131,7 +141,10 @@ public class ActivityClock extends ActivityBase
 
     @Override
     public void onClick(View v, Object viewModel) {
+        String topic = ((FusedContact)viewModel).getTopic();
+        Log.v(TAG, "onClick for topic=" + topic);
 
+        refreshClockFace(topic);
     }
     
     @Override
@@ -144,6 +157,76 @@ public class ActivityClock extends ActivityBase
         return new RecyclerViewAdapter<>(this, this, arg);
     }
 
+    private String getDefaultContact() {
+        ArrayMap<String, WaypointCollection> allWayps;
+        allWayps = App.getContactWaypoints();
+        if (allWayps.isEmpty()) {
+            return null;
+        } else {
+            return allWayps.keyAt(0);
+        }
+    }
+    
+    // Load labels into clock face
+    private void refreshClockFace(String contact) {
+        activeContact = contact;
+        labelClockFace(contact);
+    }
+    
+    private void labelClockFace(String contact) {
+        WaypointCollection wayps;
+        int numLabels;
+        String [] labels;
+
+        blankClockFaceLabels();
+        
+        if (App.getContactWaypoints().containsKey(contact))
+            wayps = App.getContactWaypoints().get(contact);
+        else {
+            Log.v(TAG, "labelClockFace got no waypoints for " + contact);
+            return;
+        }
+        
+        if (wayps.size() < 2)
+            numLabels = 0;
+        if (wayps.size() < CLOCK_FACE_MAX_LABELS)
+            numLabels = 2;
+        else
+            numLabels = CLOCK_FACE_MAX_LABELS;
+
+        Log.v(TAG, "labelClockFace " + contact + "with " + numLabels + " labels");
+        labels = new String[CLOCK_FACE_MAX_LABELS];
+        
+        if (numLabels == 0) {
+            TextView log = (TextView)findViewById(R.id.clock_face_log);
+            log.setText("Contact " + contact + " has too few waypoints defined");
+        } else if (numLabels == 2) {
+            labels[0] = wayps.keyAt(0);
+            labels[2] = wayps.keyAt(1);
+        } else {
+            for (int l = 0; l < CLOCK_FACE_MAX_LABELS; l++)
+                labels[l] = wayps.keyAt(l);
+        }
+
+        setClockFaceLabels(labels);
+    }
+
+    private void blankClockFaceLabels() {
+        String blank = getResources().getString(R.string.empty_label);
+        setClockFaceLabels(new String [] { blank, blank, blank, blank });
+    }
+    
+    private void setClockFaceLabels(String [] labels) {
+        int [] labelIds = { R.id.clock_face_0,
+                         R.id.clock_face_3,
+                         R.id.clock_face_6,
+                         R.id.clock_face_9 };
+
+        for (int l = 0; l < CLOCK_FACE_MAX_LABELS; l++)
+            if (labels[l] != null)
+                ((TextView)findViewById(labelIds[l])).setText(labels[l]);
+    }
+    
     // Clock hand animation
     private void rotateClockHand(ImageView v) {
         Drawable drawable = v.getDrawable();
@@ -162,9 +245,9 @@ public class ActivityClock extends ActivityBase
         Log.v(TAG, "waypoint trans " + wayp.getDescription());
     }
 
-    public void onEventMainThread(Events.WaypointAdded waypAdd) {
-        Waypoint wayp = waypAdd.getWaypoint();
-        Log.v(TAG, "waypoint add " + wayp.getDescription());
+    public void onEventMainThread(Events.WaypointInUpdated waypUpd) {
+        WaypointIn wayp = waypUpd.getWaypointIn();
+        Log.v(TAG, "waypoint-in add " + wayp.getDescription());
     }
 
     @SuppressWarnings("unused")
