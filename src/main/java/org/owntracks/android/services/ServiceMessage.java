@@ -206,8 +206,13 @@ public class ServiceMessage implements ProxyableService, MessageSender, MessageR
         String desc = message.getDesc();
         if (desc == null)
             desc = "PRIVATE";
-        WaypointIn w = new WaypointIn(0L, message.getTopic(), desc,
-                                      message.getLat(), message.getLon());
+
+        WaypointIn w = new WaypointIn();
+        w.setTopic(message.getTopic());
+        w.setDescription(desc);
+        w.setGeofenceLatitude(message.getLat());
+        w.setGeofenceLongitude(message.getLon());
+        
         App.upsertWaypoint(w);
     }
 
