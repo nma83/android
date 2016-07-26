@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-alpha1'
+        classpath 'com.android.tools.build:gradle:2.1.2'
     }
 }
 
@@ -84,8 +84,8 @@ android {
             storePassword '__DEBUG__'
         }
     }
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 24
+    buildToolsVersion '24.0.0'
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
