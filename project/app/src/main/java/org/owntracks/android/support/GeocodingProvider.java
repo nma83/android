@@ -88,8 +88,6 @@ public class GeocodingProvider {
                 run(m, tv, RUN_SECOND);
         }
 
-
-
         TextViewLocationResolverTask(MessageLocation m, TextView tv) {
             super(m);
             this.textView = new WeakReference<>(tv);

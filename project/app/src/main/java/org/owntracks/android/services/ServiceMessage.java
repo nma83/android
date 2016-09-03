@@ -15,8 +15,13 @@ import org.owntracks.android.messages.MessageCmd;
 import org.owntracks.android.messages.MessageLocation;
 import org.owntracks.android.messages.MessageTransition;
 import org.owntracks.android.messages.MessageUnknown;
+import org.owntracks.android.messages.MessageWaypoints;
+import org.owntracks.android.messages.MessageWaypoint;
+import org.owntracks.android.model.FusedContact;
 import org.owntracks.android.support.Events;
+import org.owntracks.android.support.GeocodingProvider;
 import org.owntracks.android.support.IncomingMessageProcessor;
+import org.owntracks.android.support.MessageWaypointCollection;
 import org.owntracks.android.support.Preferences;
 import org.owntracks.android.support.widgets.Toasts;
 import org.owntracks.android.support.interfaces.ProxyableService;
@@ -290,4 +295,54 @@ public class ServiceMessage implements ProxyableService, IncomingMessageProcesso
         ServiceProxy.getServiceNotification().processMessage(message);
     }
 
+    public void processIncomingMessage(MessageConfiguration message) {
+        if(!Preferences.getRemoteConfiguration())
+            return;
+
+        Preferences.importFromMessage(message);
+    }
+
+
+    @Override
+    public void processIncomingMessage(MessageWaypoints message) {
+        MessageWaypointCollection wayps = message.getWaypoints();
+        String baseTopic = ServiceMessageMqtt.getBaseTopic(message, message.getTopic());
+        FusedContact c = App.getFusedContact(baseTopic);
+
+        if (c != null)  {
+            Log.v(TAG, "processMessage MessageWaypoints from " + baseTopic + " with " + c + ", " + wayps);
+            App.updateContactWaypoints(c, wayps);
+        }
+    }
+    
+    @Override
+    public void processIncomingMessage(MessageWaypoint message) {
+        String baseTopic = ServiceMessageMqtt.getBaseTopic(message, message.getTopic());
+        FusedContact c = App.getFusedContact(baseTopic);
+
+        if (c != null && message.isValidMessage())  {
+            MessageWaypointCollection newWayps;
+            boolean exists;
+            
+            Log.v(TAG, "processMessage MessageWaypoint from " + baseTopic + " with " + c + ", " + message.getDesc());
+            newWayps = App.getContactWaypoints(c);
+            if (newWayps == null)
+                newWayps = new MessageWaypointCollection();
+            exists = false;
+            for (MessageWaypoint w : newWayps) {
+                if (w.getDesc() == message.getDesc()) {
+                    exists = true;
+                    w.setLat(message.getLat());
+                    w.setLon(message.getLon());
+                    w.setRad(message.getRad());
+                    break;
+                }
+            }
+            
+            if (!exists) {
+                newWayps.add(message);
+                App.updateContactWaypoints(c, newWayps);
+            }
+        }
+    }
 }

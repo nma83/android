@@ -75,7 +75,7 @@ public class App extends Application  {
     }
 
     public static MessageWaypointCollection getContactWaypoints(FusedContact c) {
-        return contactWaypoints.get(c.getTopic());
+        return contactWaypoints.get(c.getId());
     }
     
     @Override
@@ -173,10 +173,10 @@ public class App extends Application  {
         App.getEventBus().post(c);
     }
 
-    public static void updateFusedContact(FusedContact c) {
+    public static void updateFusedContact(final FusedContact c) {
         App.getEventBus().post(c);
         
-        if (contactWaypoints.containsKey(c.getTopic()))
+        if (contactWaypoints.containsKey(c.getId()))
             updateWidget(getContext());
         else
             // Request waypoints if not available yet
@@ -201,7 +201,7 @@ public class App extends Application  {
     // END TODO FIXME
     
     public static void updateContactWaypoints(FusedContact c, MessageWaypointCollection wayps) {
-        contactWaypoints.put(c.getTopic(), wayps);
+        contactWaypoints.put(c.getId(), wayps);
         updateWidget(getContext());
     }
 

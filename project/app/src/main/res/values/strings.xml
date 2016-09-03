@@ -101,6 +101,9 @@
     <string name="snackbarConnected">Connected</string>
     <string name="snackbarDisconnected">Disconnected</string>
     <string name="snackbarDisconnectedError">Disconnected with error</string>
+    <string name="preferencesCategoryWidget">Waypoint widget</string>
+    <string name="preferencesEnableWidget">Enable waypoint widget</string>
+    <string name="preferencesEnableWidgetSummary">Waypoint widget shows location with reference to a pair of nearby waypoints</string>
 
 
     <string name="ssid" translatable="false">SSID</string>
@@ -218,4 +221,7 @@
     <string name="errorPreferencesImportFailedMemory">Your device ran out of memory</string>
     <string name="noNavigationApp">no suitable app installed</string>
 
+    <string name="no_activities">Open Owntracks to configure</string>
+    <string name="no_waypoints">No waypoints</string>
+    <string name="out_of_waypoints">Out of bounds</string>
 </resources>
