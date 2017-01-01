@@ -73,6 +73,7 @@ android {
 }
 repositories {
     maven { url 'https://repo.eclipse.org/content/repositories/paho-snapshots/' }
+    maven { url 'http://dl.bintray.com/amulyakhare/maven' }
 }
 
 dependencies {
@@ -95,7 +96,7 @@ dependencies {
     compile 'org.greenrobot:greendao:3.2.0'
     compile 'org.altbeacon:android-beacon-library:2.9.1@aar'
 
-    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.1-20161018.042216-52'
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.1-20161107.052322-79'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.fasterxml.jackson.core:jackson-core:2.7.8'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.8'
@@ -108,7 +109,8 @@ dependencies {
     compile 'com.afollestad.material-dialogs:commons:0.9.1.0'
     compile('com.mikepenz:materialdrawer:5.8.0@aar') { transitive = true }
     compile 'com.mikepenz:materialize:0.8.8@aar'
-
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    
     // Preprocessors
     apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
     apt 'com.google.guava:guava:19.0' // needed by Dagger

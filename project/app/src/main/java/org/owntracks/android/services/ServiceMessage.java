@@ -295,12 +295,12 @@ public class ServiceMessage implements ProxyableService, IncomingMessageProcesso
         ServiceProxy.getServiceNotification().processMessage(message);
     }
 
-    public void processIncomingMessage(MessageConfiguration message) {
-        if(!Preferences.getRemoteConfiguration())
-            return;
-
-        Preferences.importFromMessage(message);
-    }
+//    public void processIncomingMessage(MessageConfiguration message) {
+//        if(!Preferences.getRemoteConfiguration())
+//            return;
+//
+//        Preferences.importFromMessage(message);
+//    }
 
 
     @Override

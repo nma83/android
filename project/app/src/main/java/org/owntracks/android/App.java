@@ -60,7 +60,6 @@ public class App extends Application  {
     private static Handler backgroundHandler;
 
     private static HashMap<String, MessageWaypointCollection> contactWaypoints;
-    private static ContactsViewModel contactsViewModel;
     private static Activity currentActivity;
     private static boolean inForeground;
     private static int runningActivities = 0;
@@ -72,7 +71,7 @@ public class App extends Application  {
     private static AppComponent sAppComponent = null;
 
 
-    public static ObservableMap<String, FusedContact> getFusedContacts() {
+    public static ObservableMap<FusedContact> getFusedContacts() {
         return sAppComponent.contactsRepo().getAll();
     }
 
@@ -108,7 +107,6 @@ public class App extends Application  {
 
         backgroundHandler = new Handler(mServiceHandlerThread.getLooper());
         mainHandler = new Handler(getMainLooper());
-        contactsViewModel =  new ContactsViewModel(); // TODO FIXME
         contactWaypoints = new HashMap<>();
 
         checkFirstStart();
@@ -155,9 +153,9 @@ public class App extends Application  {
     }
 
     // ======= TODO FIXME
-    public static ContactsViewModel getContactsViewModel() {
-        return contactsViewModel;
-    }
+//    public static ContactsViewModel getContactsViewModel() {
+//        return contactsViewModel;
+//    }
 
     public static void addFusedContact(final FusedContact c) {
         //fusedContacts.put(c.getId(), c);
@@ -166,10 +164,10 @@ public class App extends Application  {
         postOnMainHandler(new Runnable() {
             @Override
             public void run() {
-                contactsViewModel.items.add(c);
+                //contactsViewModel.items.add(c);
                 
-                if (Preferences.getEnableWidget())
-                    ServiceProxy.getServiceApplication().requestWaypoints(c);
+                //if (Preferences.getEnableWidget())
+                //    ServiceProxy.getServiceApplication().requestWaypoints(c);
             }
         });
         App.getEventBus().post(c);
@@ -185,8 +183,8 @@ public class App extends Application  {
             postOnMainHandler(new Runnable() {
                     @Override
                     public void run() {
-                        if (Preferences.getEnableWidget())
-                            ServiceProxy.getServiceApplication().requestWaypoints(c);
+                        //if (Preferences.getEnableWidget())
+                        //    ServiceProxy.getServiceApplication().requestWaypoints(c);
                     }
                 });
     }
@@ -196,7 +194,7 @@ public class App extends Application  {
         postOnMainHandler(new Runnable() {
             @Override
             public void run() {
-                contactsViewModel.items.clear();
+                //contactsViewModel.items.clear();
             }
         });
     }
