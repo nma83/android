@@ -15,7 +15,7 @@ import org.owntracks.android.R;
 import org.owntracks.android.services.ServiceWidget;
 
 import org.owntracks.android.model.FusedContact;
-import org.owntracks.android.activities.ActivityMap;
+import org.owntracks.android.ui.map.MapActivity;
 
 public class LClocWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "LClocWidgetProvider";
@@ -38,7 +38,7 @@ public class LClocWidgetProvider extends AppWidgetProvider {
             remoteViews.setEmptyView(R.id.stack_widget_view, R.id.stack_widget_empty_view);
             
             // set intent for item click (opens map activity)
-            Intent viewIntent = new Intent(context, ActivityMap.class);
+            Intent viewIntent = new Intent(context, MapActivity.class);
             viewIntent.setAction(Intent.ACTION_VIEW);
             viewIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             viewIntent.setData(Uri.parse(viewIntent.toUri(Intent.URI_INTENT_SCHEME)));

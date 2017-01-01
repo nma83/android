@@ -174,7 +174,7 @@ public class App extends Application  {
         });
         App.getEventBus().post(c);
     }
-
+    
     public static void updateFusedContact(final FusedContact c) {
         App.getEventBus().post(c);
         

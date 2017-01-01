@@ -30,7 +30,7 @@ import org.owntracks.android.support.ContactImageProvider;
 import org.owntracks.android.R;
 import org.owntracks.android.messages.MessageLocation;
 import org.owntracks.android.support.MessageWaypointCollection;
-import org.owntracks.android.activities.ActivityMap;
+import org.owntracks.android.ui.map.MapActivity;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -112,8 +112,7 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
             // Fill-in intent to launch map
             Bundle extras = new Bundle();
-            extras.putInt(ActivityMap.INTENT_KEY_ACTION, ActivityMap.ACTION_FOLLOW_CONTACT);
-            extras.putString(ActivityMap.INTENT_KEY_TOPIC, c.getId());
+            extras.putString(MapActivity.BUNDLE_KEY_CONTACT_ID, c.getId());
             Intent fillInIntent = new Intent();
             fillInIntent.putExtras(extras);
             remoteViews.setOnClickFillInIntent(R.id.stack_widget_item, fillInIntent);
